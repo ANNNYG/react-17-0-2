@@ -238,11 +238,12 @@ function findHostInstanceWithWarning(
   return findHostInstance(component);
 }
 
+// createRootImpl的root创建所使用的函数
 export function createContainer(
-  containerInfo: Container,
-  tag: RootTag,
-  hydrate: boolean,
-  hydrationCallbacks: null | SuspenseHydrationCallbacks,
+  containerInfo: Container, // 首: app根节点
+  tag: RootTag, // 0
+  hydrate: boolean, // 首: false
+  hydrationCallbacks: null | SuspenseHydrationCallbacks, // 首: undefined
 ): OpaqueRoot {
   return createFiberRoot(containerInfo, tag, hydrate, hydrationCallbacks);
 }
@@ -334,6 +335,7 @@ export {
   act,
 };
 
+// container: FiberRoot
 export function getPublicRootInstance(
   container: OpaqueRoot,
 ): React$Component<any, any> | PublicInstance | null {

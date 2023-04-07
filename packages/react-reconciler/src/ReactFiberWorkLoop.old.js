@@ -972,6 +972,7 @@ function performSyncWorkOnRoot(root) {
 
   let lanes;
   let exitStatus;
+  // s首未进入 始终都是调用renderRootSync
   if (
     root === workInProgressRoot &&
     includesSomeLane(root.expiredLanes, workInProgressRootRenderLanes)
@@ -979,6 +980,7 @@ function performSyncWorkOnRoot(root) {
     // There's a partial tree, and at least one of its lanes has expired. Finish
     // rendering it before rendering the rest of the expired work.
     lanes = workInProgressRootRenderLanes;
+
     exitStatus = renderRootSync(root, lanes);
     if (
       includesSomeLane(
@@ -1018,6 +1020,7 @@ function performSyncWorkOnRoot(root) {
     // attempt, we'll give up and commit the resulting tree.
     lanes = getLanesToRetrySynchronouslyOnError(root);
     if (lanes !== NoLanes) {
+      // workInProgressFiber树创建完成
       exitStatus = renderRootSync(root, lanes);
     }
   }
@@ -1035,6 +1038,8 @@ function performSyncWorkOnRoot(root) {
   const finishedWork: Fiber = (root.current.alternate: any);
   root.finishedWork = finishedWork;
   root.finishedLanes = lanes;
+  // 此时dom树已经创建完成
+  // 进入commit阶段
   commitRoot(root);
 
   // Before exiting, make sure there's a callback scheduled for the next
@@ -1495,6 +1500,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
   // If the root or lanes have changed, throw out the existing stack
   // and prepare a fresh one. Otherwise we'll continue where we left off.
   if (workInProgressRoot !== root || workInProgressRootRenderLanes !== lanes) {
+    // 在prepareFreshStack中为workInProgressRoot赋值为root
     prepareFreshStack(root, lanes);
     startWorkOnPendingInteractions(root, lanes);
   }
@@ -1513,6 +1519,7 @@ function renderRootSync(root: FiberRoot, lanes: Lanes) {
 
   do {
     try {
+      // 会调用performUnitOfWork(workInProgress);
       workLoopSync();
       break;
     } catch (thrownValue) {

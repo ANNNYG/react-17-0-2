@@ -6,6 +6,12 @@
  *
  * @flow
  */
+/*
+ * @description: 
+ * @author: Zyg 
+ * @date: 2023-02-23 17:07:14
+ * remark: 其中包含了root节点的构造函数，和root节点被创造时最终调用的函数（createFiberRoot）
+ */
 
 import type {FiberRoot, SuspenseHydrationCallbacks} from './ReactInternalTypes';
 import type {RootTag} from './ReactRootTags';
@@ -80,9 +86,12 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   }
 }
 
+
+// 创建根节点的root
+// createRootImpl中最终root被创建所调用的函数
 export function createFiberRoot(
   containerInfo: any,
-  tag: RootTag,
+  tag: RootTag, // 0
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): FiberRoot {
@@ -93,8 +102,11 @@ export function createFiberRoot(
 
   // Cyclic construction. This cheats the type system right now because
   // stateNode is any.
+  // tag为3的root fiber节点
   const uninitializedFiber = createHostRootFiber(tag);
+  // root的current指针
   root.current = uninitializedFiber;
+  // dom实例
   uninitializedFiber.stateNode = root;
 
   initializeUpdateQueue(uninitializedFiber);

@@ -146,15 +146,20 @@ function warnIfStringRefCannotBeAutoConverted(config) {
 const ReactElement = function(type, key, ref, self, source, owner, props) {
   const element = {
     // This tag allows us to uniquely identify this as a React Element
+    // 译：这个标签使我们能够唯一地将其识别为一个React元素
+    // 用于标识element是什么类型的，通过createElement创建的节点type都是REACT_ELEMENT_TYPE
+    // 经常在渲染里进行判断
     $$typeof: REACT_ELEMENT_TYPE,
 
-    // Built-in properties that belong on the element
+    // Built-in properties that belong on the element属于元素的内置属性
+    // 记录节点的类型，如是ClassComponent、funcComponent、原生dom还是react提供的Component
     type: type,
-    key: key,
-    ref: ref,
+    key: key, // null
+    ref: ref, // null
+    // createElement中处理过后的props
     props: props,
 
-    // Record the component responsible for creating this element.
+    // Record the component responsible for creating this element.// 记录负责创建该元素的组件
     _owner: owner,
   };
 
@@ -345,6 +350,9 @@ export function jsxDEV(type, config, maybeKey, source, self) {
  * Create and return a new ReactElement of the given type.
  * See https://reactjs.org/docs/react-api.html#createelement
  */
+// type 节点类型
+// config attrs
+// children 子节点
 export function createElement(type, config, children) {
   let propName;
 
@@ -371,18 +379,21 @@ export function createElement(type, config, children) {
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
     // Remaining properties are added to a new props object
+    // RESERVED_PROPS内建的props
     for (propName in config) {
       if (
         hasOwnProperty.call(config, propName) &&
         !RESERVED_PROPS.hasOwnProperty(propName)
       ) {
-        props[propName] = config[propName];
+        props[propName] = config[propName]; // 将config中的属性放入props中
       }
     }
   }
 
   // Children can be more than one argument, and those are transferred onto
   // the newly allocated props object.
+  // 多个children则以数组的形势存储
+  // props.children指针指向children | childArray
   const childrenLength = arguments.length - 2;
   if (childrenLength === 1) {
     props.children = children;
@@ -398,8 +409,9 @@ export function createElement(type, config, children) {
     }
     props.children = childArray;
   }
-
-  // Resolve default props
+  // class Comp extends React.Component
+  // 可以通过Comp.defaultProps={} 设置一些默认值
+  // 设置默认值
   if (type && type.defaultProps) {
     const defaultProps = type.defaultProps;
     for (propName in defaultProps) {

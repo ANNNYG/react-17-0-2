@@ -111,12 +111,13 @@ function shouldHydrateDueToLegacyHeuristic(container) {
 }
 
 function legacyCreateRootFromDOMContainer(
-  container: Container,
-  forceHydrate: boolean,
+  container: Container, // 容器
+  forceHydrate: boolean, // legacyRenderSubtreeIntoContainer首屏渲染传false
 ): RootType {
   const shouldHydrate =
     forceHydrate || shouldHydrateDueToLegacyHeuristic(container);
   // First clear any existing content.
+  // 首先清除现有的内容。
   if (!shouldHydrate) {
     let warned = false;
     let rootSibling;
@@ -138,6 +139,8 @@ function legacyCreateRootFromDOMContainer(
       container.removeChild(rootSibling);
     }
   }
+
+  // 开发模式相关
   if (__DEV__) {
     if (shouldHydrate && !forceHydrate && !warnedAboutHydrateAPI) {
       warnedAboutHydrateAPI = true;
@@ -173,12 +176,13 @@ function warnOnInvalidCallback(callback: mixed, callerName: string): void {
 }
 
 function legacyRenderSubtreeIntoContainer(
-  parentComponent: ?React$Component<any, any>,
-  children: ReactNodeList,
-  container: Container,
-  forceHydrate: boolean,
-  callback: ?Function,
+  parentComponent: ?React$Component<any, any>, // render中传null
+  children: ReactNodeList, // App根组件
+  container: Container, // 容器
+  forceHydrate: boolean, // render中传false
+  callback: ?Function, // render中的回调
 ) {
+  // 开发模式相关
   if (__DEV__) {
     topLevelUpdateWarnings(container);
     warnOnInvalidCallback(callback === undefined ? null : callback, 'render');
@@ -285,8 +289,8 @@ export function hydrate(
 }
 
 export function render(
-  element: React$Element<any>,
-  container: Container,
+  element: React$Element<any>, // 根组件 app
+  container: Container, // 容器
   callback: ?Function,
 ) {
   invariant(

@@ -64,9 +64,9 @@ function ReactDOMRoot(container: Container, options: void | RootOptions) {
 }
 
 function ReactDOMBlockingRoot(
-  container: Container,
-  tag: RootTag,
-  options: void | RootOptions,
+  container: Container, // 首:app容器
+  tag: RootTag, // 首: 0
+  options: void | RootOptions, //首:undefined
 ) {
   this._internalRoot = createRootImpl(container, tag, options);
 }
@@ -117,12 +117,14 @@ ReactDOMRoot.prototype.unmount = ReactDOMBlockingRoot.prototype.unmount = functi
   });
 };
 
+// createRootImpl目的是为了创建root,最终返回root
 function createRootImpl(
-  container: Container,
-  tag: RootTag,
-  options: void | RootOptions,
+  container: Container, // 首: app
+  tag: RootTag, // 首: 0
+  options: void | RootOptions, // 首: undefined
 ) {
   // Tag is either LegacyRoot or Concurrent Root
+  // 标签是LegacyRoot或Concurrent Root
   const hydrate = options != null && options.hydrate === true;
   const hydrationCallbacks =
     (options != null && options.hydrationOptions) || null;
@@ -131,6 +133,7 @@ function createRootImpl(
       options.hydrationOptions != null &&
       options.hydrationOptions.mutableSources) ||
     null;
+  // fiberRootNode被创建
   const root = createContainer(container, tag, hydrate, hydrationCallbacks);
   markContainerAsRoot(root.current, container);
   const containerNodeType = container.nodeType;
@@ -193,8 +196,8 @@ export function createBlockingRoot(
 }
 
 export function createLegacyRoot(
-  container: Container,
-  options?: RootOptions,
+  container: Container, // 首屏渲染为app容器
+  options?: RootOptions, // 首屏渲染为undefined
 ): RootType {
   return new ReactDOMBlockingRoot(container, LegacyRoot, options);
 }
