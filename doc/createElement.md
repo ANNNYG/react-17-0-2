@@ -54,5 +54,12 @@ _jsx("div", {
 
 4、最终将一系列初始化完的值进行传入`ReactElement`中并返回
 
+#### ReactElement
+
+参数列表 `type, key, ref, self, source, owner, props`代码过于简单不过多描述
+
+![image-20230407214824972](/Users/walkingdead/Library/Application Support/typora-user-images/image-20230407214824972.png)
 
 
+
+需要注意的是$$typeof属性，是用于标识element是什么类型的，通过createElement创建的节点type都是REACT_ELEMENT_TYPE，在后续的渲染里经常会使用这个字段进行判断
