@@ -12,4 +12,8 @@
 
 以下是具体方法的doc
 
+### 以下是react包中源码的解读
+react包与调度和渲染无关，源码中会调用其他包的方法，等到解读该包时才会进行解读
+
 [createElement](./doc/createElement.md)
+[Component和PureComponent](./doc/component.md)

@@ -21,6 +21,7 @@ function Component(props, context, updater) {
   this.props = props;
   this.context = context;
   // If a component has string refs, we will assign a different object later.
+  // 如果component有一个string refs，会指派一个不同的对象
   this.refs = emptyObject;
   // We initialize the default updater but the real one gets injected by the
   // renderer.
@@ -54,7 +55,12 @@ Component.prototype.isReactComponent = {};
  * @final
  * @protected
  */
+// this.setState
+// partialState setSate中新的state或者设置state的函数
+// callback state更新后的回调函数
+// component的定义是用于后面更新时 帮助承载一些信息s s
 Component.prototype.setState = function(partialState, callback) {
+  // 类型判断 错误提醒
   invariant(
     typeof partialState === 'object' ||
       typeof partialState === 'function' ||
@@ -62,6 +68,8 @@ Component.prototype.setState = function(partialState, callback) {
     'setState(...): takes an object of state variables to update or a ' +
       'function which returns an object of state variables.',
   );
+  // 具体代码在react-dom中实现
+  // 这么做的好处，方便多端
   this.updater.enqueueSetState(this, partialState, callback, 'setState');
 };
 
@@ -88,6 +96,7 @@ Component.prototype.forceUpdate = function(callback) {
  * we would like to deprecate them, we're not going to move them over to this
  * modern base class. Instead, we define a getter that warns if it's accessed.
  */
+// 两个即将被废弃的api
 if (__DEV__) {
   const deprecatedAPIs = {
     isMounted: [
