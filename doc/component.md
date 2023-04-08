@@ -6,7 +6,21 @@ Component的主体代码量十分的少，主要是对`props`、`refs`、`contex
 
 然后在后续的代码中，在原型对象上定义了`setSate`等一些方法，具体来看`setSate`
 
-![image-20230408222006661](/Users/walkingdead/Library/Application Support/typora-user-images/image-20230408222006661.png)
+```js
+Component.prototype.setState = function(partialState, callback) {
+  // 类型判断 错误提醒
+  invariant(
+    typeof partialState === 'object' ||
+      typeof partialState === 'function' ||
+      partialState == null,
+    'setState(...): takes an object of state variables to update or a ' +
+      'function which returns an object of state variables.',
+  );
+  // 具体代码在react-dom中实现
+  // 这么做的好处，方便多端
+  this.updater.enqueueSetState(this, partialState, callback, 'setState');
+};
+```
 
 传入的两个参数
 
@@ -28,7 +42,22 @@ enqueueSetState见名推断是一个更新方法，推断在更新队列中设�
 
 像hook中的memo，让子组件在Props改变的时候才进行一个渲染
 
-![image-20230408222540443](/Users/walkingdead/Library/Application Support/typora-user-images/image-20230408222540443.png)
+```js
+function PureComponent(props, context, updater) {
+  this.props = props;
+  this.context = context;
+  // If a component has string refs, we will assign a different object later.
+  this.refs = emptyObject;
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+
+const pureComponentPrototype = (PureComponent.prototype = new ComponentDummy());
+pureComponentPrototype.constructor = PureComponent;
+// Avoid an extra prototype jump for these methods.
+Object.assign(pureComponentPrototype, Component.prototype);
+pureComponentPrototype.isPureReactComponent = true;
+
+```
 
 具体代码其实跟Component没什么差别，或者说PureComponent继承于Component
 

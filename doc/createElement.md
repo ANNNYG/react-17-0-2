@@ -58,8 +58,28 @@ _jsx("div", {
 
 参数列表 `type, key, ref, self, source, owner, props`代码过于简单不过多描述
 
-![image-20230407214824972](/Users/walkingdead/Library/Application Support/typora-user-images/image-20230407214824972.png)
+```js
+const ReactElement = function(type, key, ref, self, source, owner, props) {
+  const element = {
+    // This tag allows us to uniquely identify this as a React Element
+    // 译：这个标签使我们能够唯一地将其识别为一个React元素
+    // 用于标识element是什么类型的，通过createElement创建的节点type都是REACT_ELEMENT_TYPE
+    // 经常在渲染里进行判断
+    $$typeof: REACT_ELEMENT_TYPE,
 
+    // Built-in properties that belong on the element属于元素的内置属性
+    // 记录节点的类型，如是ClassComponent、funcComponent、原生dom还是react提供的Component
+    type: type,
+    key: key, // null
+    ref: ref, // null
+    // createElement中处理过后的props
+    props: props,
 
+    // Record the component responsible for creating this element.// 记录负责创建该元素的组件
+    _owner: owner,
+  };
+  return element;
+};
+```
 
 需要注意的是$$typeof属性，是用于标识element是什么类型的，通过createElement创建的节点type都是REACT_ELEMENT_TYPE，在后续的渲染里经常会使用这个字段进行判断
