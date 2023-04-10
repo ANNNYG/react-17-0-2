@@ -13,7 +13,7 @@ import type {ReactContext} from 'shared/ReactTypes';
 
 export function createContext<T>(
   defaultValue: T,
-  calculateChangedBits: ?(a: T, b: T) => number,
+  calculateChangedBits: ?(a: T, b: T) => number, // 计算新老context的变化
 ): ReactContext<T> {
   if (calculateChangedBits === undefined) {
     calculateChangedBits = null;
@@ -33,6 +33,7 @@ export function createContext<T>(
   }
 
   const context: ReactContext<T> = {
+    // 同reactElement的$$typeof不同
     $$typeof: REACT_CONTEXT_TYPE,
     _calculateChangedBits: calculateChangedBits,
     // As a workaround to support multiple concurrent renderers, we categorize
@@ -40,6 +41,8 @@ export function createContext<T>(
     // there to be two concurrent renderers at most: React Native (primary) and
     // Fabric (secondary); React DOM (primary) and React ART (secondary).
     // Secondary renderers store their context values on separate fields.
+    // 用于记录Provider上的value有更新的情况下就会放到这两个变量中
+    // 记录最新的context的值的
     _currentValue: defaultValue,
     _currentValue2: defaultValue,
     // Used to track how many concurrent renderers this context currently

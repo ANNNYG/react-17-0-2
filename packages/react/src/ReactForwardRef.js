@@ -10,6 +10,7 @@ import {REACT_FORWARD_REF_TYPE, REACT_MEMO_TYPE} from 'shared/ReactSymbols';
 export function forwardRef<Props, ElementType: React$ElementType>(
   render: (props: Props, ref: React$Ref<ElementType>) => React$Node,
 ) {
+  // 开发环境相关
   if (__DEV__) {
     if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
       console.error(
@@ -43,10 +44,16 @@ export function forwardRef<Props, ElementType: React$ElementType>(
     }
   }
 
+  // $$typeof 并不是把component的$$typeof改为REACT_FORWARD_REF_TYPE
+  // 而是ReactElement方法中返回的element的type修改为elementType对象
+  // 通过React.createElement创建的节点的$$typeof永远都是REACT_ELEMENT_TYPE
+  // render传进来的function Component
   const elementType = {
     $$typeof: REACT_FORWARD_REF_TYPE,
     render,
   };
+
+  // 开发环境相关
   if (__DEV__) {
     let ownName;
     Object.defineProperty(elementType, 'displayName', {

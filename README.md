@@ -18,3 +18,7 @@ react包与调度和渲染无关，源码中会调用其他包的方法，等到
 [createElement](./doc/createElement.md)
 
 [Component和PureComponent](./doc/component.md)
+
+[createRef和forwardRef](./doc/createRef和forwardRef.md)
+
+[lazy和Suspense](./doc/lazy和Suspense.md)
