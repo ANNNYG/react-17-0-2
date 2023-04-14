@@ -114,6 +114,7 @@ function legacyCreateRootFromDOMContainer(
   container: Container, // 容器
   forceHydrate: boolean, // legacyRenderSubtreeIntoContainer首屏渲染传false
 ): RootType {
+  // 服务端须渲染相关
   const shouldHydrate =
     forceHydrate || shouldHydrateDueToLegacyHeuristic(container);
   // First clear any existing content.
@@ -152,8 +153,9 @@ function legacyCreateRootFromDOMContainer(
     }
   }
 
+  // this._internalRoot = createRootImpl(container, tag, options);
   return createLegacyRoot(
-    container,
+    container, // 容器
     shouldHydrate
       ? {
           hydrate: true,
@@ -178,7 +180,7 @@ function warnOnInvalidCallback(callback: mixed, callerName: string): void {
 function legacyRenderSubtreeIntoContainer(
   parentComponent: ?React$Component<any, any>, // render中传null
   children: ReactNodeList, // App根组件
-  container: Container, // 容器
+  container: Container, // 容器dom节点
   forceHydrate: boolean, // render中传false
   callback: ?Function, // render中的回调
 ) {
@@ -190,14 +192,19 @@ function legacyRenderSubtreeIntoContainer(
 
   // TODO: Without `any` type, Flow says "Property cannot be accessed on any
   // member of intersection type." Whyyyyyy.
+
+  // 第一次渲染的时候 是一个原生dom节点 root为undefined
   let root: RootType = (container._reactRootContainer: any);
   let fiberRoot;
+  // 首屏渲染
   if (!root) {
     // Initial mount
+    // 创建一个FiberRoot
     root = container._reactRootContainer = legacyCreateRootFromDOMContainer(
-      container,
-      forceHydrate,
+      container, // 首屏渲染
+      forceHydrate, // false
     );
+    // root._internalRoot上保存着刚创建出来的FiberRootNode
     fiberRoot = root._internalRoot;
     if (typeof callback === 'function') {
       const originalCallback = callback;
@@ -207,7 +214,9 @@ function legacyRenderSubtreeIntoContainer(
       };
     }
     // Initial mount should not be batched.
+    // 涉及react上批量更新的概念
     unbatchedUpdates(() => {
+      // 此时dom元素已经挂在到了页面上
       updateContainer(children, fiberRoot, parentComponent, callback);
     });
   } else {
@@ -291,7 +300,7 @@ export function hydrate(
 export function render(
   element: React$Element<any>, // 根组件 app
   container: Container, // 容器
-  callback: ?Function,
+  callback: ?Function, // 应用渲染结束后回调函数
 ) {
   invariant(
     isValidContainer(container),

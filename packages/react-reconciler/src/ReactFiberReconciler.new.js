@@ -248,16 +248,19 @@ export function createContainer(
 }
 
 export function updateContainer(
-  element: ReactNodeList,
-  container: OpaqueRoot,
-  parentComponent: ?React$Component<any, any>,
-  callback: ?Function,
+  element: ReactNodeList, // App根组件
+  container: OpaqueRoot, // 创建出来的FiberRootNode
+  parentComponent: ?React$Component<any, any>, // 首屏渲染为null
+  callback: ?Function, // 回调函数
 ): Lane {
   if (__DEV__) {
     onScheduleRoot(container, element);
   }
+  // current指针
   const current = container.current;
   const eventTime = requestEventTime();
+  // eslint-disable-next-line react-internal/no-production-logging
+  console.log(eventTime, 'eventTime');
   if (__DEV__) {
     // $FlowExpectedError - jest isn't a global, and isn't recognized outside of tests
     if ('undefined' !== typeof jest) {

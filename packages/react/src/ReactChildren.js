@@ -72,10 +72,10 @@ function getElementKey(element: any, index: number): string {
 
 function mapIntoArray(
   children: ?ReactNodeList,
-  array: Array<React$Node>,
-  escapedPrefix: string,
-  nameSoFar: string,
-  callback: (?React$Node) => ?ReactNodeList,
+  array: Array<React$Node>, // map中传入的result
+  escapedPrefix: string, // ""
+  nameSoFar: string, // ""
+  callback: (?React$Node) => ?ReactNodeList, // 回调函数
 ): number {
   const type = typeof children;
 
@@ -86,6 +86,10 @@ function mapIntoArray(
 
   let invokeCallback = false;
 
+  // 对传入的Children进行类型判断
+  // 不同的类型进不同的分支
+  // 这一些都是代表的单个节点
+  // 单个节点可以直接进入callback的调用
   if (children === null) {
     invokeCallback = true;
   } else {
@@ -104,12 +108,16 @@ function mapIntoArray(
   }
 
   if (invokeCallback) {
+    // 保存形参中的children
     const child = children;
+    // 拿到回调函数的结果
+    // 在map中为 func.call(context, child, count++); func是我们传入的回调函数
     let mappedChild = callback(child);
     // If it's the only child, treat the name as if it was wrapped in an array
     // so that it's consistent if the number of children grows:
     const childKey =
       nameSoFar === '' ? SEPARATOR + getElementKey(child, 0) : nameSoFar;
+    // 判断是否为数组 是数组则递归 否则将child推入传入的result
     if (Array.isArray(mappedChild)) {
       let escapedChildKey = '';
       if (childKey != null) {
@@ -131,6 +139,7 @@ function mapIntoArray(
             childKey,
         );
       }
+      // 对于传入的array的处理完成
       array.push(mappedChild);
     }
     return 1;
@@ -142,6 +151,7 @@ function mapIntoArray(
   const nextNamePrefix =
     nameSoFar === '' ? SEPARATOR : nameSoFar + SUBSEPARATOR;
 
+  // 多个节点的情况
   if (Array.isArray(children)) {
     for (let i = 0; i < children.length; i++) {
       child = children[i];
@@ -221,18 +231,21 @@ type MapFunc = (child: ?React$Node) => ?ReactNodeList;
  * @return {object} Object containing the ordered map of results.
  */
 function mapChildren(
-  children: ?ReactNodeList,
-  func: MapFunc,
+  children: ?ReactNodeList, // Children 只有一个Child是为Element，多个Child时为数组
+  func: MapFunc, // 回调函数
   context: mixed,
 ): ?Array<React$Node> {
   if (children == null) {
     return children;
   }
+  // 定义一个result数组
   const result = [];
   let count = 0;
   mapIntoArray(children, result, '', '', function(child) {
     return func.call(context, child, count++);
   });
+
+  // 返回处理后的result
   return result;
 }
 

@@ -68,6 +68,7 @@ function ReactDOMBlockingRoot(
   tag: RootTag, // 首: 0
   options: void | RootOptions, //首:undefined
 ) {
+  // this._internalRoot指向被创建出来的fiberRootNode
   this._internalRoot = createRootImpl(container, tag, options);
 }
 
@@ -125,6 +126,7 @@ function createRootImpl(
 ) {
   // Tag is either LegacyRoot or Concurrent Root
   // 标签是LegacyRoot或Concurrent Root
+  // 这一串变量不用管 都是false
   const hydrate = options != null && options.hydrate === true;
   const hydrationCallbacks =
     (options != null && options.hydrationOptions) || null;
@@ -133,8 +135,12 @@ function createRootImpl(
       options.hydrationOptions != null &&
       options.hydrationOptions.mutableSources) ||
     null;
-  // fiberRootNode被创建
+  // root被创建
+  // 同时项目根的current指向了tag=3的根FiberRoot
   const root = createContainer(container, tag, hydrate, hydrationCallbacks);
+  // container上添加了一个__reactContainer属性 值是root.current
+  // root.current  tag=3的根FiberRoot
+  // 容器container dom
   markContainerAsRoot(root.current, container);
   const containerNodeType = container.nodeType;
 

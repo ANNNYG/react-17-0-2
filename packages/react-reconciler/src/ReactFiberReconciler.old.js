@@ -249,10 +249,10 @@ export function createContainer(
 }
 
 export function updateContainer(
-  element: ReactNodeList,
-  container: OpaqueRoot,
-  parentComponent: ?React$Component<any, any>,
-  callback: ?Function,
+  element: ReactNodeList, // App根组件
+  container: OpaqueRoot, // 创建出来的FiberRootNode
+  parentComponent: ?React$Component<any, any>, // 首屏渲染为null
+  callback: ?Function, // 回调函数
 ): Lane {
   if (__DEV__) {
     onScheduleRoot(container, element);
@@ -296,6 +296,8 @@ export function updateContainer(
     }
   }
 
+  // 创建一个update对象
+  // 用于标记react应用需要更新的地点
   const update = createUpdate(eventTime, lane);
   // Caution: React DevTools currently depends on this property
   // being called "element".
@@ -315,7 +317,13 @@ export function updateContainer(
     update.callback = callback;
   }
 
+  // 把update对象添加到更新队列中
   enqueueUpdate(current, update);
+
+  // 开始更新的任务调度
+  // react16以后为任务添加了优先级
+  // 一串更新新中可能有不同的级别的任务在里面
+  // 所以需要一个优先级来进行调度
   scheduleUpdateOnFiber(current, lane, eventTime);
 
   return lane;

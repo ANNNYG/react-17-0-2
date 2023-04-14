@@ -7,8 +7,8 @@
  * @flow
  */
 /*
- * @description: 
- * @author: Zyg 
+ * @description:
+ * @author: Zyg
  * @date: 2023-02-23 17:07:14
  * remark: 其中包含了root节点的构造函数，和root节点被创造时最终调用的函数（createFiberRoot）
  */
@@ -86,7 +86,6 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   }
 }
 
-
 // 创建根节点的root
 // createRootImpl中最终root被创建所调用的函数
 export function createFiberRoot(
@@ -95,6 +94,8 @@ export function createFiberRoot(
   hydrate: boolean,
   hydrationCallbacks: null | SuspenseHydrationCallbacks,
 ): FiberRoot {
+  // 项目的根root节点
+  // current指针会在current Fiber树和workInProgress
   const root: FiberRoot = (new FiberRootNode(containerInfo, tag, hydrate): any);
   if (enableSuspenseCallback) {
     root.hydrationCallbacks = hydrationCallbacks;
@@ -103,12 +104,15 @@ export function createFiberRoot(
   // Cyclic construction. This cheats the type system right now because
   // stateNode is any.
   // tag为3的root fiber节点
+  // 项目根的current指向root fiber节点
   const uninitializedFiber = createHostRootFiber(tag);
   // root的current指针
   root.current = uninitializedFiber;
   // dom实例
   uninitializedFiber.stateNode = root;
 
+  // tag为3的root fiber节点
+  // updateQueue的updateQueue上放置了一个queue对象
   initializeUpdateQueue(uninitializedFiber);
 
   return root;
